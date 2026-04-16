@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GameTop — Магазин игровых услуг</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0a0f1e;
+            color: #ffffff;
+        }
+
+        .container {
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            padding: 20px 0;
+            border-bottom: 2px solid #2a2f3f;
+            margin-bottom: 40px;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ff6b6b, #feca57);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .admin-link {
+            background: #2a3147;
+            padding: 8px 16px;
+            border-radius: 20px;
+            text-decoration: none;
+            color: #feca57;
+            font-size: 0.9rem;
+        }
+
+        .admin-link:hover {
+            background: #ff6b6b;
+            color: white;
+        }
+
+        .hero {
+            background: linear-gradient(135deg, #1e2436 0%, #0f1420 100%);
+            border-radius: 30px;
+            padding: 60px 40px;
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .hero h1 {
+            font-size: 2.8rem;
+            margin-bottom: 20px;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            color: #a0a5b5;
+            max-width: 700px;
+            margin: 0 auto 30px;
+        }
+
+        .btn {
+            background: #ff6b6b;
+            color: white;
+            padding: 12px 30px;
+            border-radius: 40px;
+            text-decoration: none;
+            font-weight: bold;
+            display: inline-block;
+            transition: 0.3s;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background: #ff5252;
+            transform: scale(1.05);
+        }
+
+        .section-title {
+            font-size: 2rem;
+            margin: 40px 0 20px;
+            text-align: center;
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 30px;
+            margin: 40px 0;
+        }
+
+        .product-card {
+            background: #151c2c;
+            border-radius: 20px;
+            padding: 20px;
+            transition: 0.3s;
+            border: 1px solid #252d40;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            border-color: #ff6b6b;
+            box-shadow: 0 10px 25px rgba(255, 107, 107, 0.2);
+        }
+
+        .product-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+
+        .product-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .product-price {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #feca57;
+            margin: 15px 0;
+        }
+
+        .order-btn {
+            background: #2a3147;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 30px;
+            cursor: pointer;
+            width: 100%;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .order-btn:hover {
+            background: #ff6b6b;
+        }
+
+        .payment {
+            background: #151c2c;
+            border-radius: 20px;
+            padding: 30px;
+            margin: 40px 0;
+            text-align: center;
+        }
+
+        .payment h3 {
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+
+        .payment-cards {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .card-number {
+            background: #0a0f1e;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-family: monospace;
+            font-size: 1.1rem;
+        }
+
+        .how-to {
+            background: #1e2436;
+            border-radius: 20px;
+            padding: 30px;
+            margin: 40px 0;
+        }
+
+        .how-to ol {
+            margin-left: 20px;
+            margin-top: 15px;
+        }
+
+        .how-to li {
+            margin: 10px 0;
+            line-height: 1.5;
+        }
+
+        footer {
+            text-align: center;
+            padding: 40px 0;
+            color: #5a6278;
+            margin-top: 40px;
+        }
+
+        /* Админ-панель стили */
+        .admin-panel {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            z-index: 1000;
+            overflow-y: auto;
+        }
+
+        .admin-content {
+            max-width: 1200px;
+            margin: 50px auto;
+            background: #151c2c;
+            border-radius: 30px;
+            padding: 30px;
+        }
+
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #2a3147;
+        }
+
+        .close-admin {
+            background: #ff6b6b;
+            padding: 10px 20px;
+            border-radius: 30px;
+            cursor: pointer;
+        }
+
+        .price-input {
+            background: #2a3147;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 8px;
+            color: white;
+            width: 100px;
+        }
+
+        .save-btn {
+            background: #2ecc71;
+            padding: 12px 30px;
+            border-radius: 40px;
+            border: none;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        .admin-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .admin-table th, .admin-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #2a3147;
+        }
+
+        .admin-table th {
+            background: #1e2436;
+            color: #feca57;
+        }
+
+        .login-form {
+            max-width: 400px;
+            margin: 100px auto;
+            background: #151c2c;
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+        }
+
+        .login-form input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border-radius: 10px;
+            border: none;
+            background: #2a3147;
+            color: white;
+        }
+
+        .message {
+            padding: 10px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .message.success {
+            background: #2ecc71;
+        }
+
+        .message.error {
+            background: #e74c3c;
+        }
+
+        @media (max-width: 700px) {
+            .hero h1 { font-size: 1.8rem; }
+            .section-title { font-size: 1.5rem; }
+            .admin-table { font-size: 12px; }
+            .price-input { width: 70px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">🎮 GAME<span style="color:#ff6b6b;">TOP</span></div>
+            <div style="display: flex; gap: 15px; align-items: center;">
+                <div class="logo" style="font-size: 1rem;">🚀 Моментальная выдача</div>
+                <a href="#" onclick="showAdminLogin()" class="admin-link">🔐 Админ</a>
+            </div>
+        </div>
+
+        <div class="hero">
+            <h1>Игры, скины, алмазы 🔥</h1>
+            <p>Free Fire • PUBG Mobile • Standoff 2<br>Лучшие цены, моментальная доставка, 100% гарантия</p>
+            <a href="#products" class="btn">📦 Смотреть товары</a>
+        </div>
+
+        <h2 class="section-title" id="products">🛍️ Наши товары</h2>
+        <div class="products-grid" id="products-grid"></div>
+
+        <!-- РЕКВИЗИТЫ ДЛЯ ОПЛАТЫ -->
+        <div class="payment">
+            <h3>💳 Реквизиты для оплаты</h3>
+            <div class="payment-cards">
+                <div class="card-number">🏦 Ozon Банк: 2204320942389232</div>
+                <div class="card-number">🏦 М банк: +996 224 844 774</div>
+            </div>
+            <p style="margin-top: 15px; color: #feca57;">⚠️ Переводите точную сумму!</p>
+        </div>
+
+        <!-- КАК ЗАКАЗАТЬ -->
+        <div class="how-to">
+            <h3>🚀 Как сделать заказ?</h3>
+            <ol>
+                <li>Выберите товар и нажмите «Заказать»</li>
+                <li>Переведите точную сумму на любой реквизит</li>
+                <li>Сделайте скриншот чека</li>
+                <li>Напишите админу: <strong>@GameTopUp11_bot</strong> и пришлите:</li>
+                <ul style="margin-left: 30px; margin-top: 5px;">
+                    <li>• ID в игре</li>
+                    <li>• Никнейм</li>
+                    <li>• Название товара</li>
+                    <li>• Скриншот чека</li>
+                </ul>
+                <li>⏳ Ожидайте 5–60 минут — товар придёт!</li>
+            </ol>
+        </div>
+
+        <div style="text-align: center; margin: 40px 0;">
+            <a href="https://t.me/GameTopUp11_bot" class="btn" style="background: #0088cc; font-size: 1.2rem;">📩 Написать админу в Telegram</a>
+        </div>
+
+        <footer>
+            GameTop — моментальная выдача товаров 🎮<br>
+            По всем вопросам: @GameTopUp11_bot
+        </footer>
+    </div>
+
+    <!-- Админ-панель -->
+    <div id="adminPanel" class="admin-panel">
+        <div class="admin-content">
+            <div class="admin-header">
+                <h2>👑 Админ-панель GameTop</h2>
+                <div class="close-admin" onclick="closeAdmin()">✖ Закрыть</div>
+            </div>
+            <div id="adminContent"></div>
+        </div>
+    </div>
+
+    <script>
+        // Товары магазина
+        let products = [
+            { id: 1, name: "Free Fire — 100 Алмазов", price: 70, icon: "💎" },
+            { id: 2, name: "Free Fire — 310 Алмазов", price: 230, icon: "💎" },
+            { id: 3, name: "Free Fire — 520+52 (572)", price: 360, icon: "💎" },
+            { id: 4, name: "Free Fire — 1060+106 (1166)", price: 720, icon: "💎" },
+            { id: 5, name: "Free Fire — 2180+218 (2398)", price: 1500, icon: "💎" },
+            { id: 6, name: "Free Fire — 5600+560 (6160)", price: 3500, icon: "💎" },
+            { id: 7, name: "PUBG — 60 UC", price: 80, icon: "🎯" },
+            { id: 8, name: "PUBG — 300+25 UC", price: 400, icon: "🎯" },
+            { id: 9, name: "PUBG — 600+60 UC", price: 850, icon: "🎯" },
+            { id: 10, name: "PUBG — 1500+300 UC", price: 2050, icon: "🎯" },
+            { id: 11, name: "PUBG — 3000+850 UC", price: 4000, icon: "🎯" },
+            { id: 12, name: "PUBG — 6000+2100 UC", price: 8000, icon: "🎯" },
+            { id: 13, name: "Standoff 2 — 100 Gold", price: 160, icon: "🔫" },
+            { id: 14, name: "Standoff 2 — 200 Gold", price: 320, icon: "🔫" },
+            { id: 15, name: "Standoff 2 — 500 Gold", price: 620, icon: "🔫" },
+            { id: 16, name: "Standoff 2 — 1000 Gold", price: 1050, icon: "🔫" },
+            { id: 17, name: "Standoff 2 — 3000 Gold", price: 2450, icon: "🔫" },
+            { id: 18, name: "PUBG — Prime (1 месяц)", price: 80, icon: "📅" },
+            { id: 19, name: "PUBG — Prime Plus (1 месяц)", price: 800, icon: "📅" },
+            { id: 20, name: "PUBG — Elite Pass LVL 1-100", price: 900, icon: "👑" }
+        ];
+
+        // Пароль админа (можешь изменить)
+        const ADMIN_PASSWORD = "admin123";
+
+        // Загрузка сохранённых цен
+        function loadPrices() {
+            const saved = localStorage.getItem('gametop_prices');
+            if (saved) {
+                const savedPrices = JSON.parse(saved);
+                products = products.map(p => ({
+                    ...p,
+                    price: savedPrices[p.id] || p.price
+                }));
+            }
+            renderProducts();
+        }
+
+        // Сохранение цен
+        function savePrices() {
+            const prices = {};
+            products.forEach(p => {
+                const input = document.getElementById(`price_${p.id}`);
+                if (input) {
+                    prices[p.id] = parseInt(input.value);
+                }
+            });
+            
+            products = products.map(p => ({
+                ...p,
+                price: prices[p.id] || p.price
+            }));
+            
+            localStorage.setItem('gametop_prices', JSON.stringify(prices));
+            renderProducts();
+            showMessage("✅ Цены сохранены!", "success");
+            renderAdminPanel();
+        }
+
+        // Отображение товаров на главной
+        function renderProducts() {
+            const grid = document.getElementById('products-grid');
+            if (!grid) return;
+            
+            grid.innerHTML = '';
+            products.forEach(p => {
+                const card = document.createElement('div');
+                card.className = 'product-card';
+                card.innerHTML = `
+                    <div class="product-icon">${p.icon}</div>
+                    <div class="product-title">${p.name}</div>
+                    <div class="product-price">${p.price} ₽</div>
+                    <button class="order-btn" onclick="order('${p.name}', ${p.price})">📦 Заказать</button>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // Отображение админ-панели
+        function renderAdminPanel() {
+            const adminContent = document.getElementById('adminContent');
+            let html = `
+                <table class="admin-table">
+                    <thead>
+                        <tr><th>ID</th><th>Иконка</th><th>Название</th><th>Цена (₽)</th></tr>
+                    </thead>
+                    <tbody>
+            `;
+            
+            products.forEach(p => {
+                html += `
+                    <tr>
+                        <td>${p.id}</td>
+                        <td style="font-size:1.5rem">${p.icon}</td>
+                        <td>${p.name}</td>
+                        <td><input type="number" id="price_${p.id}" class="price-input" value="${p.price}" step="10"></td>
+                    </tr>
+                `;
+            });
+            
+            html += `
+                    </tbody>
+                </table>
+                <button class="save-btn" onclick="savePrices()">💾 Сохранить все цены</button>
+            `;
+            
+            adminContent.innerHTML = html;
+        }
+
+        // Показать форму входа
+        function showAdminLogin() {
+            const adminContent = document.getElementById('adminContent');
+            adminContent.innerHTML = `
+                <div class="login-form">
+                    <h3>🔐 Вход в админ-панель</h3>
+                    <input type="password" id="adminPassword" placeholder="Введите пароль">
+                    <button class="btn" onclick="checkAdminPassword()" style="margin-top:15px">Войти</button>
+                </div>
+            `;
+            document.getElementById('adminPanel').style.display = 'block';
+        }
+
+        // Проверка пароля
+        function checkAdminPassword() {
+            const password = document.getElementById('adminPassword').value;
+            if (password === ADMIN_PASSWORD) {
+                renderAdminPanel();
+                showMessage("✅ Добро пожаловать в админ-панель!", "success");
+            } else {
+                showMessage("❌ Неверный пароль!", "error");
+            }
+        }
+
+        function showMessage(text, type) {
+            const adminContent = document.getElementById('adminContent');
+            const msgDiv = document.createElement('div');
+            msgDiv.className = `message ${type}`;
+            msgDiv.innerHTML = text;
+            adminContent.insertBefore(msgDiv, adminContent.firstChild);
+            setTimeout(() => msgDiv.remove(), 3000);
+        }
+
+        function closeAdmin() {
+            document.getElementById('adminPanel').style.display = 'none';
+        }
+
+        function order(product, price) {
+            const message = `🛒 ЗАКАЗ!\n\nТовар: ${product}\nСумма: ${price} ₽\n\nЯ перевёл(а) точную сумму. Мой ID в игре: ______\nНикнейм: ______`;
+            const url = `https://t.me/GameTopUp11_bot?text=${encodeURIComponent(message)}`;
+            window.open(url, '_blank');
+        }
+
+        // Запуск
+        loadPrices();
+    </script>
+</body>
+</html>
