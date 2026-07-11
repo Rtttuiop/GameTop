@@ -1,0 +1,1633 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GameTopUp — Магазин игровых товаров</title>
+    <style>
+        :root {
+            --bg-color: #0b0f19;
+            --card-bg: #141b2d;
+            --accent: #00FFC8;
+            --accent-hover: #00d4a7;
+            --text-main: #ffffff;
+            --text-muted: #7e8b9b;
+            --price-old: #ef4444;
+            --input-bg: #1f2a45;
+            --orange: #ff6b00;
+            --warning-bg: rgba(255, 200, 0, 0.1);
+            --warning-border: #FFD700;
+            --danger-bg: rgba(255, 0, 0, 0.1);
+            --danger-border: #ff4444;
+            --info-bg: rgba(0, 200, 255, 0.1);
+            --info-border: #00CCFF;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            padding-bottom: 140px;
+        }
+
+        header {
+            background-color: var(--card-bg);
+            padding: 12px 15px;
+            text-align: center;
+            border-bottom: 2px solid var(--accent);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 20px rgba(0, 255, 200, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--text-main);
+            text-decoration: none;
+            letter-spacing: 1px;
+        }
+
+        .logo span {
+            color: var(--accent);
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .profile-btn {
+            background: var(--input-bg);
+            border: 1px solid var(--accent);
+            border-radius: 30px;
+            padding: 6px 14px;
+            color: var(--text-main);
+            font-size: 13px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: 0.3s;
+        }
+
+        .profile-btn:hover {
+            background: rgba(0, 255, 200, 0.1);
+        }
+
+        .profile-btn .balance {
+            color: var(--accent);
+            font-weight: 700;
+        }
+
+        .header-links a {
+            color: var(--accent);
+            text-decoration: none;
+            margin: 0 8px;
+            font-size: 18px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 15px;
+        }
+
+        .main-tabs {
+            display: flex;
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 5px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255,255,255,0.05);
+            gap: 5px;
+        }
+
+        .main-tab {
+            flex: 1;
+            text-align: center;
+            padding: 12px 8px;
+            font-weight: bold;
+            font-size: 14px;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.3s;
+            color: var(--text-muted);
+        }
+
+        .main-tab.active {
+            background-color: var(--accent);
+            color: #000000;
+        }
+
+        .main-tab.unlock-tab.active {
+            background-color: var(--orange);
+            color: #fff;
+        }
+
+        .main-tab.unlock-tab {
+            color: var(--orange);
+            border: 1px solid rgba(255, 107, 0, 0.2);
+        }
+
+        .game-tabs {
+            display: flex;
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 5px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255,255,255,0.05);
+            overflow-x: auto;
+            gap: 3px;
+        }
+
+        .game-tabs::-webkit-scrollbar {
+            display: none;
+        }
+
+        .game-tab {
+            flex: 1;
+            min-width: 70px;
+            text-align: center;
+            padding: 10px 6px;
+            font-weight: bold;
+            font-size: 12px;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.3s;
+            color: var(--text-muted);
+            white-space: nowrap;
+        }
+
+        .game-tab.active {
+            background-color: var(--accent);
+            color: #000000;
+        }
+
+        .category-tabs {
+            display: flex;
+            overflow-x: auto;
+            gap: 8px;
+            margin-bottom: 15px;
+            padding-bottom: 5px;
+        }
+
+        .category-tabs::-webkit-scrollbar {
+            display: none;
+        }
+
+        .category-tab {
+            padding: 8px 16px;
+            background-color: var(--card-bg);
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            white-space: nowrap;
+            cursor: pointer;
+            color: var(--text-muted);
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .category-tab.active {
+            border-color: var(--accent);
+            color: var(--accent);
+            background-color: rgba(0, 255, 200, 0.05);
+        }
+
+        .uid-container {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .uid-container label {
+            display: block;
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .uid-input {
+            width: 100%;
+            padding: 12px 15px;
+            background-color: var(--input-bg);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            color: var(--text-main);
+            font-size: 16px;
+            font-weight: bold;
+            letter-spacing: 1px;
+            outline: none;
+        }
+
+        .uid-input:focus {
+            border-color: var(--accent);
+        }
+
+        .promo-container {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 215, 0, 0.15);
+            display: none;
+        }
+
+        .promo-container.visible {
+            display: block;
+        }
+
+        .promo-container label {
+            display: block;
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .promo-container label span {
+            color: #FFD700;
+        }
+
+        .promo-input-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .promo-input {
+            flex: 1;
+            padding: 12px 15px;
+            background-color: var(--input-bg);
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            border-radius: 8px;
+            color: var(--text-main);
+            font-size: 16px;
+            letter-spacing: 2px;
+            outline: none;
+            text-transform: uppercase;
+        }
+
+        .promo-input:focus {
+            border-color: #FFD700;
+        }
+
+        .promo-input::placeholder {
+            text-transform: none;
+            letter-spacing: 0;
+            color: #555;
+        }
+
+        .promo-btn {
+            background: linear-gradient(135deg, #FFD700, #f0c000);
+            color: #000;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            transition: 0.3s;
+            white-space: nowrap;
+        }
+
+        .promo-btn:active {
+            transform: scale(0.97);
+        }
+
+        .promo-message {
+            margin-top: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            min-height: 20px;
+        }
+
+        .promo-message.success {
+            color: #00FFC8;
+        }
+
+        .promo-message.error {
+            color: #ef4444;
+        }
+
+        .promo-message.warning {
+            color: #FFD700;
+        }
+
+        .promo-toggle {
+            color: #FFD700;
+            font-size: 13px;
+            cursor: pointer;
+            margin-top: 5px;
+            display: inline-block;
+        }
+
+        .promo-toggle:hover {
+            text-decoration: underline;
+        }
+
+        .warning-box {
+            background: var(--warning-bg);
+            border: 1px solid var(--warning-border);
+            border-radius: 8px;
+            padding: 8px 12px;
+            margin-bottom: 10px;
+            font-size: 12px;
+            color: #ddd;
+            line-height: 1.4;
+        }
+
+        .warning-box strong {
+            color: #FFD700;
+        }
+
+        .warning-box .highlight {
+            color: #ff6b6b;
+            font-weight: 600;
+        }
+
+        .warning-box .green {
+            color: #00FFC8;
+            font-weight: 600;
+        }
+
+        .warning-box.danger {
+            background: var(--danger-bg);
+            border-color: var(--danger-border);
+        }
+
+        .warning-box.danger strong {
+            color: #ff4444;
+        }
+
+        .warning-box .age-warning {
+            color: #FFD700;
+            font-weight: 700;
+        }
+
+        .warning-box.info {
+            background: var(--info-bg);
+            border-color: var(--info-border);
+        }
+
+        .warning-box.info strong {
+            color: #00CCFF;
+        }
+
+        .warning-box .check {
+            color: #00FFC8;
+            font-weight: 600;
+        }
+
+        .products-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        .product-card {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background-color: var(--card-bg);
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.05);
+            cursor: pointer;
+            transition: border-color 0.2s;
+        }
+
+        .product-card.selected {
+            border-color: var(--accent);
+            background-color: rgba(0, 255, 200, 0.02);
+        }
+
+        .product-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .product-title {
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        .product-prices {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .price-current {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .price-old {
+            font-size: 13px;
+            color: var(--price-old);
+            text-decoration: line-through;
+        }
+
+        .price-discount {
+            font-size: 12px;
+            color: #FFD700;
+            font-weight: 600;
+        }
+
+        .radio-circle {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--text-muted);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .product-card.selected .radio-circle {
+            border-color: var(--accent);
+        }
+
+        .product-card.selected .radio-circle::after {
+            content: '';
+            width: 10px;
+            height: 10px;
+            background-color: var(--accent);
+            border-radius: 50%;
+        }
+
+        .unlock-content {
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .unlock-content.active {
+            display: block;
+        }
+
+        .unlock-card {
+            background: linear-gradient(135deg, rgba(255, 107, 0, 0.1), rgba(255, 200, 0, 0.05));
+            border: 2px solid var(--orange);
+            border-radius: 20px;
+            padding: 30px 20px;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .unlock-card .icon {
+            font-size: 64px;
+            margin-bottom: 10px;
+        }
+
+        .unlock-card h2 {
+            color: var(--orange);
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .unlock-card p {
+            color: var(--text-muted);
+            font-size: 15px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .unlock-card .benefits {
+            text-align: left;
+            background: rgba(255,255,255,0.03);
+            border-radius: 12px;
+            padding: 15px 20px;
+            margin-bottom: 25px;
+        }
+
+        .unlock-card .benefits li {
+            list-style: none;
+            color: #ddd;
+            padding: 6px 0;
+            font-size: 14px;
+        }
+
+        .unlock-card .benefits li::before {
+            content: '✅ ';
+            color: var(--orange);
+        }
+
+        .btn-support-big {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--orange), #ff9500);
+            color: #fff;
+            padding: 16px 50px;
+            border-radius: 50px;
+            font-size: 18px;
+            font-weight: 700;
+            text-decoration: none;
+            box-shadow: 0 4px 30px rgba(255, 107, 0, 0.4);
+            transition: 0.3s;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-support-big:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 40px rgba(255, 107, 0, 0.6);
+        }
+
+        .btn-support-big:active {
+            transform: scale(0.97);
+        }
+
+        .bottom-actions {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: var(--card-bg);
+            padding: 12px 15px;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            z-index: 90;
+            display: flex;
+            gap: 10px;
+            max-width: 100%;
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.5);
+        }
+
+        .bottom-actions .btn {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            text-align: center;
+            transition: 0.3s;
+        }
+
+        .btn-buy {
+            background-color: var(--accent);
+            color: #000000;
+            box-shadow: 0 4px 20px rgba(0, 255, 200, 0.3);
+        }
+
+        .btn-buy:active {
+            background-color: var(--accent-hover);
+        }
+
+        .btn-support {
+            background-color: var(--input-bg);
+            color: var(--text-main);
+            border: 1px solid rgba(255,255,255,0.1);
+            flex: 0.5;
+            font-size: 20px;
+        }
+
+        .btn-support:active {
+            background-color: rgba(255,255,255,0.05);
+        }
+
+        .game-content {
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .game-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        footer {
+            background-color: var(--card-bg);
+            padding: 20px 15px;
+            text-align: center;
+            font-size: 13px;
+            color: var(--text-muted);
+            border-top: 1px solid rgba(255,255,255,0.05);
+            margin-top: 40px;
+        }
+
+        footer a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        .admin-trigger {
+            margin-top: 15px;
+            display: inline-block;
+            color: rgba(255,255,255,0.2);
+            text-decoration: underline;
+            cursor: pointer;
+            font-size: 11px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.85);
+            z-index: 1000;
+            overflow-y: auto;
+            padding: 20px 15px;
+        }
+
+        .modal-content {
+            background-color: var(--card-bg);
+            max-width: 500px;
+            margin: 0 auto;
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid var(--accent);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 10px;
+        }
+
+        .modal-close {
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--text-muted);
+        }
+
+        .admin-item-row {
+            background-color: rgba(255,255,255,0.02);
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .admin-item-title {
+            font-size: 13px;
+            font-weight: bold;
+            color: var(--accent);
+            margin-bottom: 8px;
+        }
+
+        .admin-inputs {
+            display: flex;
+            gap: 10px;
+        }
+
+        .admin-input-group {
+            flex: 1;
+        }
+
+        .admin-input-group label {
+            display: block;
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+        }
+
+        .admin-field {
+            width: 100%;
+            padding: 8px;
+            background-color: var(--input-bg);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 5px;
+            color: #fff;
+            font-size: 14px;
+        }
+
+        .admin-save-btn {
+            width: 100%;
+            background-color: var(--accent);
+            color: #000;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 16px;
+            margin-top: 15px;
+            cursor: pointer;
+        }
+
+        .profile-modal .modal-content {
+            max-width: 400px;
+        }
+
+        .profile-balance {
+            text-align: center;
+            padding: 20px 0;
+        }
+
+        .profile-balance .amount {
+            font-size: 48px;
+            font-weight: 900;
+            color: var(--accent);
+        }
+
+        .profile-balance .label {
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        .profile-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .profile-actions .btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn-recharge {
+            background-color: var(--accent);
+            color: #000;
+        }
+
+        .btn-history {
+            background-color: var(--input-bg);
+            color: var(--text-main);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .profile-uid {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 13px;
+            margin-top: 10px;
+        }
+
+        @media (max-width: 600px) {
+            .bottom-actions .btn {
+                font-size: 13px;
+                padding: 12px;
+            }
+            .btn-support {
+                flex: 0.4;
+                font-size: 20px;
+            }
+            .header-right .profile-btn span {
+                display: none;
+            }
+            .logo {
+                font-size: 18px;
+            }
+            .main-tab {
+                font-size: 12px;
+                padding: 10px 5px;
+            }
+            .unlock-card h2 {
+                font-size: 20px;
+            }
+            .btn-support-big {
+                padding: 14px 30px;
+                font-size: 16px;
+            }
+            .promo-input-group {
+                flex-direction: column;
+            }
+            .game-tab {
+                font-size: 11px;
+                min-width: 55px;
+                padding: 8px 4px;
+            }
+            .warning-box {
+                font-size: 11px;
+                padding: 6px 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <a href="#" class="logo">Game<span>TopUp</span></a>
+        <div class="header-right">
+            <div class="header-links">
+                <a href="https://t.me/GameTopUp11" target="_blank">📢</a>
+                <a href="https://t.me/GameTopUp11_bot" target="_blank">🤖</a>
+            </div>
+            <button class="profile-btn" onclick="openProfile()">
+                👤 <span>Баланс:</span> <span class="balance" id="header-balance">0 ₽</span>
+            </button>
+        </div>
+    </header>
+
+    <div class="container">
+
+        <div class="main-tabs">
+            <div class="main-tab active" data-tab="shop" onclick="switchMainTab('shop')">🛒 Магазин</div>
+            <div class="main-tab unlock-tab" data-tab="unlock" onclick="switchMainTab('unlock')">🔓 Разблокировка</div>
+        </div>
+
+        <div id="shop-content" class="game-content active">
+            <div class="game-tabs">
+                <div class="game-tab active" onclick="switchGame('ff')">Free Fire</div>
+                <div class="game-tab" onclick="switchGame('pubg')">PUBG</div>
+                <div class="game-tab" onclick="switchGame('roblox')">Roblox</div>
+                <div class="game-tab" onclick="switchGame('brawl')">Brawl Stars</div>
+                <div class="game-tab" onclick="switchGame('standoff')">Standoff 2</div>
+            </div>
+
+            <div class="uid-container">
+                <!-- ===== ДЛЯ ROBLOX ПОКАЗЫВАЕМ ТОЛЬКО EMAIL ===== -->
+                <div id="roblox-email-container" style="display: none;">
+                    <label for="roblox-email" style="display: block; font-size: 14px; color: var(--text-muted); margin-bottom: 8px; font-weight: 600;">
+                        📧 Введите Email для покупки Робуксов:
+                    </label>
+                    <input type="email" id="roblox-email" class="uid-input" placeholder="example@mail.com">
+                </div>
+
+                <!-- ===== ДЛЯ ВСЕХ ОСТАЛЬНЫХ ИГР ПОКАЗЫВАЕМ ID/UID ===== -->
+                <div id="uid-container-default">
+                    <label id="id-label" for="uid">Введите Ваш UID:</label>
+                    <input type="text" id="uid" class="uid-input" placeholder="Например: 123456789">
+                </div>
+
+                <div style="margin-top: 12px;">
+                    <span class="promo-toggle" onclick="togglePromo()">🎫 Есть промокод?</span>
+                </div>
+
+                <div class="promo-container" id="promo-container">
+                    <label>🎫 Введите промокод <span>(скидка до 99%)</span></label>
+                    <div class="promo-input-group">
+                        <input type="text" id="promo-input" class="promo-input" placeholder="ВВЕДИТЕ ПРОМОКОД">
+                        <button class="promo-btn" onclick="applyPromo()">Применить</button>
+                    </div>
+                    <div class="promo-message" id="promo-message"></div>
+                </div>
+            </div>
+
+            <div id="categories-container" class="category-tabs"></div>
+
+            <!-- Блок для предупреждений -->
+            <div id="warning-container"></div>
+
+            <div id="products-container" class="products-grid"></div>
+        </div>
+
+        <div id="unlock-content" class="unlock-content">
+            <div class="unlock-card">
+                <div class="icon">🔓</div>
+                <h2>Поможем разблокировать ваш аккаунт</h2>
+                <p>
+                    Если ваш аккаунт заблокирован — не паникуйте! Мы поможем вам его восстановить.
+                    Обратитесь в нашу поддержку, и мы решим вашу проблему максимально быстро.
+                </p>
+                <div class="benefits">
+                    <li>⚡ Быстрое решение проблемы</li>
+                    <li>🛡️ Безопасно и конфиденциально</li>
+                    <li>💬 Индивидуальный подход</li>
+                    <li>✅ Опыт работы с блокировками</li>
+                </div>
+                <a href="https://t.me/GameTopUp11_bot" class="btn-support-big" target="_blank">
+                    💬 Написать в поддержку
+                </a>
+                <p style="margin-top: 20px; font-size: 13px; color: #666;">
+                    Напишите нам — мы на связи 24/7
+                </p>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="bottom-actions">
+        <button class="btn btn-buy" onclick="processOrder()">🛒 Купить сейчас</button>
+        <button class="btn btn-support" onclick="openSupport()">💬</button>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 <b>GameTopUp</b>. Все права защищены.</p>
+        <p style="margin-top: 5px;">Наш Telegram: <a href="https://t.me/GameTopUp11" target="_blank">@GameTopUp11</a> | Бот поддержки: <a href="https://t.me/GameTopUp11_bot" target="_blank">@GameTopUp11_bot</a></p>
+        <span class="admin-trigger" onclick="openAdmin()">Админ-панель</span>
+    </footer>
+
+    <div id="admin-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Управление ценами GameTopUp</h3>
+                <span class="modal-close" onclick="closeAdmin()">&times;</span>
+            </div>
+            <div id="admin-items-list"></div>
+            <button class="admin-save-btn" onclick="saveAdminPrices()">Сохранить изменения</button>
+        </div>
+    </div>
+
+    <div id="profile-modal" class="modal profile-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>👤 Личный кабинет</h3>
+                <span class="modal-close" onclick="closeProfile()">&times;</span>
+            </div>
+            <div class="profile-balance">
+                <div class="label">Ваш баланс</div>
+                <div class="amount" id="profile-balance-amount">0 ₽</div>
+            </div>
+            <div class="profile-uid" id="profile-uid-display">UID: не указан</div>
+            <div class="profile-actions">
+                <button class="btn btn-recharge" onclick="rechargeBalance()">💰 Пополнить</button>
+                <button class="btn btn-history" onclick="showHistory()">📋 История</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ========== ДАННЫЕ ==========
+        const defaultProducts = {
+            ff: {
+                diamonds: [
+                    { id: "ff_d1", name: "100 + 10 алмазов 💎", price: 70, oldPrice: 109 },
+                    { id: "ff_d2", name: "310 + 31 алмазов 🔥 Хит", price: 227, oldPrice: 349 },
+                    { id: "ff_d3", name: "520 + 52 алмазов 💎", price: 367, oldPrice: 599 },
+                    { id: "ff_d4", name: "1060 + 106 алмазов 💎", price: 739, oldPrice: 1188 },
+                    { id: "ff_d5", name: "2180 + 218 алмазов 💎", price: 1479, oldPrice: 2398 },
+                    { id: "ff_d6", name: "5600 + 560 алмазов 💎", price: 3549, oldPrice: 6999 }
+                ],
+                vouchers: [
+                    { id: "ff_v1", name: "Недельный ваучер Лайт 📩", price: 32, oldPrice: 53 },
+                    { id: "ff_v2", name: "Ваучер на неделю 🎟️", price: 148, oldPrice: 209 },
+                    { id: "ff_v3", name: "Ваучер на месяц 🎫", price: 539, oldPrice: 799 }
+                ]
+            },
+            pubg: {
+                uc: [
+                    { id: "pubg_u1", name: "60 UC 🪙", price: 80, oldPrice: 99 },
+                    { id: "pubg_u2", name: "300 + 25 UC 🪙", price: 394, oldPrice: 525 },
+                    { id: "pubg_u3", name: "600 + 60 UC 🪙", price: 849, oldPrice: 1099 },
+                    { id: "pubg_u4", name: "1500 + 300 UC 🪙", price: 2119, oldPrice: 2699 },
+                    { id: "pubg_u5", name: "3000 + 850 UC 🪙", price: 4239, oldPrice: 5199 },
+                    { id: "pubg_u6", name: "6000 + 2100 UC 🪙", price: 8469, oldPrice: 11099 }
+                ],
+                passes: [
+                    { id: "pubg_p1", name: "Elite Pass LVL 1-100 👑", price: 969, oldPrice: 0 },
+                    { id: "pubg_p2", name: "Elite Pass Plus LVL 1-100 ➕", price: 2409, oldPrice: 0 },
+                    { id: "pubg_p3", name: "Elite Pass LVL 1-50 🎫", price: 481, oldPrice: 0 }
+                ],
+                packs: [
+                    { id: "pubg_pk1", name: "First Purchase Pack 📦", price: 80, oldPrice: 0 },
+                    { id: "pubg_pk2", name: "Mythic Emblem Pack 🟥", price: 395, oldPrice: 0 },
+                    { id: "pubg_pk3", name: "Upgradable Firearm Materials Pack 🔧", price: 237, oldPrice: 0 },
+                    { id: "pubg_pk4", name: "Weekly Deal Pack 1 🧧", price: 80, oldPrice: 0 },
+                    { id: "pubg_pk5", name: "Weekly Deal Pack 2 🧧", price: 241, oldPrice: 0 },
+                    { id: "pubg_pk6", name: "Weekly Mythic Emblem Value Pack 💎", price: 241, oldPrice: 0 }
+                ],
+                prime: [
+                    { id: "pubg_pr1", name: "Prime (1 месяц) 🎖️", price: 80, oldPrice: 0 },
+                    { id: "pubg_pr2", name: "Prime (3 месяца) 🎖️", price: 237, oldPrice: 0 },
+                    { id: "pubg_pr3", name: "Prime (6 месяцев) 🎖️", price: 474, oldPrice: 0 },
+                    { id: "pubg_pr4", name: "Prime (12 месяцев) 🎖️", price: 949, oldPrice: 0 },
+                    { id: "pubg_pr5", name: "Prime Plus (1 Month) 🔥", price: 799, oldPrice: 0 },
+                    { id: "pubg_pr6", name: "Prime Plus (3 Months) 🔥", price: 2369, oldPrice: 0 },
+                    { id: "pubg_pr7", name: "Prime Plus (6 Months) 🔥", price: 4739, oldPrice: 0 },
+                    { id: "pubg_pr8", name: "Prime Plus (12 Months) 🔥", price: 9479, oldPrice: 0 }
+                ]
+            },
+            roblox: {
+                gamepass: [
+                    { id: "rbx_gp1", name: "50 Робов 🪙", price: 38, oldPrice: 49 },
+                    { id: "rbx_gp2", name: "100 Робов 🪙", price: 75, oldPrice: 99 },
+                    { id: "rbx_gp3", name: "150 Робов 🪙", price: 112, oldPrice: 149 },
+                    { id: "rbx_gp4", name: "200 Робов 🪙", price: 149, oldPrice: 199 },
+                    { id: "rbx_gp5", name: "250 Робов 🪙", price: 186, oldPrice: 249 },
+                    { id: "rbx_gp6", name: "300 Робов 🪙", price: 223, oldPrice: 299 },
+                    { id: "rbx_gp7", name: "350 Робов 🪙", price: 260, oldPrice: 349 },
+                    { id: "rbx_gp8", name: "400 Робов 🪙", price: 297, oldPrice: 399 },
+                    { id: "rbx_gp9", name: "450 Робов 🪙", price: 334, oldPrice: 449 },
+                    { id: "rbx_gp10", name: "500 Робов 🪙", price: 371, oldPrice: 499 },
+                    { id: "rbx_gp11", name: "550 Робов 🪙", price: 408, oldPrice: 559 },
+                    { id: "rbx_gp12", name: "600 Робов 🪙", price: 446, oldPrice: 599 },
+                    { id: "rbx_gp13", name: "650 Робов 🪙", price: 483, oldPrice: 650 },
+                    { id: "rbx_gp14", name: "700 Робов 🪙", price: 529, oldPrice: 699 },
+                    { id: "rbx_gp15", name: "750 Робов 🪙", price: 559, oldPrice: 750 },
+                    { id: "rbx_gp16", name: "800 Робов 🪙", price: 599, oldPrice: 799 },
+                    { id: "rbx_gp17", name: "850 Робов 🪙", price: 639, oldPrice: 850 },
+                    { id: "rbx_gp18", name: "900 Робов 🪙", price: 669, oldPrice: 899 },
+                    { id: "rbx_gp19", name: "950 Робов 🪙", price: 709, oldPrice: 950 },
+                    { id: "rbx_gp20", name: "1000 Робов 🪙", price: 749, oldPrice: 1000 },
+                    { id: "rbx_gp21", name: "2000 Робов 🪙", price: 1489, oldPrice: 2000 },
+                    { id: "rbx_gp22", name: "3000 Робов 🪙", price: 2229, oldPrice: 3000 },
+                    { id: "rbx_gp23", name: "4000 Робов 🪙", price: 2969, oldPrice: 4000 },
+                    { id: "rbx_gp24", name: "5000 Робов 🪙", price: 3709, oldPrice: 5000 }
+                ],
+                codes: [
+                    { id: "rbx_c1", name: "500 Робов (Только РФ 🏴‍☠️)", price: 689, oldPrice: 0 },
+                    { id: "rbx_c2", name: "1000 Робов (Только РФ 🏴‍☠️)", price: 1369, oldPrice: 0 },
+                    { id: "rbx_c3", name: "4000 Робов (Только РФ 🏴‍☠️)", price: 5469, oldPrice: 0 },
+                    { id: "rbx_c4", name: "5250 Робов (Только РФ 🏴‍☠️)", price: 7179, oldPrice: 0 },
+                    { id: "rbx_c5", name: "800 Робов (Весь мир 🌍 - Не РФ)", price: 819, oldPrice: 0 },
+                    { id: "rbx_c6", name: "2000 Робов (Весь мир 🌍 - Не РФ)", price: 1999, oldPrice: 0 },
+                    { id: "rbx_c7", name: "4500 Робов (Весь мир 🌍 - Не РФ)", price: 4369, oldPrice: 0 },
+                    { id: "rbx_c8", name: "10000 Робов (Весь мир 🌍 - Не РФ)", price: 9039, oldPrice: 0 }
+                ],
+                items: [
+                    { id: "rbx_i1", name: "Blue Steel Mohawk Helmet 🪖", price: 464, oldPrice: 0 },
+                    { id: "rbx_i2", name: "Plasma Wings 🦅", price: 889, oldPrice: 0 }
+                ]
+            },
+            brawl: {
+                gems: [
+                    { id: "br_g1", name: "30 гемов 💎", price: 187, oldPrice: 260 },
+                    { id: "br_g2", name: "80 гемов 💎", price: 447, oldPrice: 589 },
+                    { id: "br_g3", name: "170 гемов 💎", price: 899, oldPrice: 1189 },
+                    { id: "br_g4", name: "360 гемов 💎", price: 1809, oldPrice: 2336 },
+                    { id: "br_g5", name: "950 гемов 💎", price: 4509, oldPrice: 5711 },
+                    { id: "br_g6", name: "2000 гемов 💎", price: 9029, oldPrice: 11299 },
+                    { id: "br_g7", name: "4000 гемов 💎", price: 18059, oldPrice: 24509 },
+                    { id: "br_g8", name: "6000 гемов 💎", price: 27079, oldPrice: 38609 }
+                ],
+                pass: [
+                    { id: "br_p1", name: "PRO PASS - Кубок Brawl 🏆", price: 2259, oldPrice: 2299 },
+                    { id: "br_p2", name: "Brawl Pass +Plus 🎫➕", price: 1179, oldPrice: 1269 },
+                    { id: "br_p3", name: "Brawl Pass / Бралл Пасс 🎫", price: 829, oldPrice: 879 },
+                    { id: "br_p4", name: "Улучшить до Plus (При наличии Обычного БП) ⬆️", price: 447, oldPrice: 519 }
+                ]
+            },
+            standoff: {
+                gold: [
+                    { id: "st_g1", name: "100G 🟢", price: 100, oldPrice: 199 },
+                    { id: "st_g2", name: "200G 🟢", price: 180, oldPrice: 299 },
+                    { id: "st_g3", name: "300G 🟢", price: 289, oldPrice: 399 },
+                    { id: "st_g4", name: "500G 🟢", price: 470, oldPrice: 599 },
+                    { id: "st_g5", name: "1000G 🟢", price: 979, oldPrice: 1099 },
+                    { id: "st_g6", name: "3000G 🟢", price: 2599, oldPrice: 2999 }
+                ]
+            }
+        };
+
+        // ========== ПРОМОКОДЫ ==========
+        const promoCodes = {
+            "SVOYCHIK": { discount: 10, limit: 3 },
+            "UCH4BU": { discount: 5, limit: 3 },
+            "X1NEYMARJR": { discount: 10, limit: 3 },
+            "ABDULTM": { discount: 99, limit: 1 },
+            "HEIGHT": { discount: 3, limit: 5 },
+            "KYRGYZSTAN": { discount: 5, limit: 3 },
+            "DAGESTAN": { discount: 5, limit: 3 },
+            "RUSSIA": { discount: 5, limit: 3 },
+            "KAZAKHSTAN": { discount: 5, limit: 3 },
+            "RTTTUIOP": { discount: 3, limit: 3 },
+            "YUSUFJAN4": { discount: 5, limit: 3 },
+            "KGZNEYMAR": { discount: 5, limit: 3 },
+            "SHOK1ROV01": { discount: 5, limit: 3 },
+            "GG": { discount: 2, limit: 1000 },
+            "67": { discount: 2, limit: 67000 },
+            "52": { discount: 2, limit: 52000 }
+        };
+
+        let activeDiscount = 0;
+        let promoApplied = false;
+        let activePromoCode = '';
+
+        function getUsageCount(code) {
+            const usage = JSON.parse(localStorage.getItem('promo_usage') || '{}');
+            return usage[code] || 0;
+        }
+
+        function incrementUsage(code) {
+            const usage = JSON.parse(localStorage.getItem('promo_usage') || '{}');
+            usage[code] = (usage[code] || 0) + 1;
+            localStorage.setItem('promo_usage', JSON.stringify(usage));
+        }
+
+        function getRemainingUses(code) {
+            const used = getUsageCount(code);
+            const limit = promoCodes[code].limit;
+            return limit - used;
+        }
+
+        function togglePromo() {
+            const container = document.getElementById('promo-container');
+            container.classList.toggle('visible');
+            if (!container.classList.contains('visible')) {
+                document.getElementById('promo-input').value = '';
+                document.getElementById('promo-message').textContent = '';
+                document.getElementById('promo-message').className = 'promo-message';
+                activeDiscount = 0;
+                promoApplied = false;
+                activePromoCode = '';
+                renderProducts();
+            }
+        }
+
+        function applyPromo() {
+            const input = document.getElementById('promo-input');
+            const msg = document.getElementById('promo-message');
+            const code = input.value.trim().toUpperCase();
+
+            if (!code) {
+                msg.textContent = '❌ Введите промокод!';
+                msg.className = 'promo-message error';
+                return;
+            }
+
+            if (!promoCodes[code]) {
+                msg.textContent = '❌ Неверный промокод!';
+                msg.className = 'promo-message error';
+                activeDiscount = 0;
+                promoApplied = false;
+                activePromoCode = '';
+                renderProducts();
+                return;
+            }
+
+            const remaining = getRemainingUses(code);
+
+            if (remaining <= 0) {
+                msg.textContent = '❌ Промокод больше недействителен! Лимит использований исчерпан.';
+                msg.className = 'promo-message error';
+                activeDiscount = 0;
+                promoApplied = false;
+                activePromoCode = '';
+                renderProducts();
+                return;
+            }
+
+            activeDiscount = promoCodes[code].discount;
+            promoApplied = true;
+            activePromoCode = code;
+            
+            incrementUsage(code);
+            
+            const newRemaining = getRemainingUses(code);
+            msg.textContent = `✅ Промокод активирован! Скидка ${activeDiscount}% | Осталось ${newRemaining} использований`;
+            msg.className = 'promo-message success';
+            
+            localStorage.setItem('gametopup_promo', code);
+            
+            renderProducts();
+        }
+
+        // ========== ОСТАЛЬНЫЕ ФУНКЦИИ ==========
+        let db = JSON.parse(localStorage.getItem('gametopup_db')) || defaultProducts;
+        let currentGame = 'ff';
+        let currentCategory = 'diamonds';
+        let selectedProductId = null;
+
+        let userBalance = parseInt(localStorage.getItem('gametopup_balance')) || 0;
+        let userUID = localStorage.getItem('gametopup_uid') || '';
+
+        const categoriesData = {
+            ff: [
+                { id: 'diamonds', name: 'Алмазы 💎' },
+                { id: 'vouchers', name: 'Ваучеры 🎫' }
+            ],
+            pubg: [
+                { id: 'uc', name: 'UC 🪙' },
+                { id: 'passes', name: 'Пропуски 🎫' },
+                { id: 'packs', name: 'Наборы 📦' },
+                { id: 'prime', name: 'Подписка Prime 👑' }
+            ],
+            roblox: [
+                { id: 'gamepass', name: 'Геймпасс дешево' },
+                { id: 'codes', name: 'Коды моментально' },
+                { id: 'items', name: 'Предметы' }
+            ],
+            brawl: [
+                { id: 'gems', name: 'Гемы 💎' },
+                { id: 'pass', name: 'Brawl Pass 🎫' }
+            ],
+            standoff: [
+                { id: 'gold', name: 'Золото 🟢' }
+            ]
+        };
+
+        function switchMainTab(tab) {
+            document.querySelectorAll('.main-tab').forEach(t => t.classList.remove('active'));
+            document.querySelector(`.main-tab[data-tab="${tab}"]`).classList.add('active');
+
+            if (tab === 'shop') {
+                document.getElementById('shop-content').classList.add('active');
+                document.getElementById('unlock-content').classList.remove('active');
+            } else {
+                document.getElementById('shop-content').classList.remove('active');
+                document.getElementById('unlock-content').classList.add('active');
+            }
+        }
+
+        window.onload = function() {
+            updateBalanceDisplay();
+            const savedUid = localStorage.getItem('gametopup_uid');
+            if (savedUid) {
+                document.getElementById('uid').value = savedUid;
+            }
+            const savedPromo = localStorage.getItem('gametopup_promo');
+            if (savedPromo && promoCodes[savedPromo]) {
+                const remaining = getRemainingUses(savedPromo);
+                if (remaining > 0) {
+                    document.getElementById('promo-input').value = savedPromo;
+                    activeDiscount = promoCodes[savedPromo].discount;
+                    promoApplied = true;
+                    activePromoCode = savedPromo;
+                    document.getElementById('promo-container').classList.add('visible');
+                    document.getElementById('promo-message').textContent = `✅ Промокод активирован! Скидка ${activeDiscount}% | Осталось ${remaining} использований`;
+                    document.getElementById('promo-message').className = 'promo-message success';
+                } else {
+                    localStorage.removeItem('gametopup_promo');
+                }
+            }
+            renderCategories();
+            renderProducts();
+        };
+
+        function updateBalanceDisplay() {
+            document.getElementById('header-balance').textContent = userBalance + ' ₽';
+            document.getElementById('profile-balance-amount').textContent = userBalance + ' ₽';
+        }
+
+        function switchGame(game) {
+            currentGame = game;
+            currentCategory = categoriesData[game][0].id;
+            selectedProductId = null;
+            
+            const tabs = document.querySelectorAll('.game-tab');
+            tabs.forEach((tab, i) => {
+                const games = ['ff', 'pubg', 'roblox', 'brawl', 'standoff'];
+                tab.classList.toggle('active', games[i] === game);
+            });
+
+            const robloxEmailContainer = document.getElementById('roblox-email-container');
+            const uidDefaultContainer = document.getElementById('uid-container-default');
+            const label = document.getElementById('id-label');
+            
+            if (game === 'roblox') {
+                robloxEmailContainer.style.display = 'block';
+                uidDefaultContainer.style.display = 'none';
+            } else {
+                robloxEmailContainer.style.display = 'none';
+                uidDefaultContainer.style.display = 'block';
+                
+                if (game === 'ff') {
+                    label.innerText = 'Введите Ваш UID (Free Fire):';
+                } else if (game === 'pubg') {
+                    label.innerText = 'Введите Ваш ID (PUBG Mobile):';
+                } else if (game === 'brawl') {
+                    label.innerText = 'Введите Email от Supercell ID:';
+                } else {
+                    label.innerText = 'Введите Ваш USER ID (Standoff 2):';
+                }
+            }
+            
+            renderCategories();
+            renderProducts();
+        }
+
+        function switchCategory(catId) {
+            currentCategory = catId;
+            selectedProductId = null;
+            
+            document.querySelectorAll('.category-tab').forEach(tab => {
+                tab.classList.toggle('active', tab.dataset.id === catId);
+            });
+
+            renderWarning();
+            renderProducts();
+        }
+
+        function renderWarning() {
+            const container = document.getElementById('warning-container');
+            container.innerHTML = '';
+
+            // ===== ПРЕДУПРЕЖДЕНИЯ ДЛЯ ROBLOX (компактные) =====
+            if (currentGame === 'roblox') {
+                let warningHTML = `
+                    <div class="warning-box">
+                        <strong>⚠️ Roblox:</strong> Для доната нужно подтверждение возраста (16+) в игре.
+                    </div>
+                `;
+                if (currentCategory === 'gamepass') {
+                    warningHTML += `
+                        <div class="warning-box danger">
+                            <strong>🚨 Геймпасс:</strong> Доставка с <strong>5-дневной задержкой</strong> 🚨 Не покупайте более 5000 робусков в месяц!
+                        </div>
+                    `;
+                }
+                if (currentCategory === 'codes') {
+                    warningHTML += `
+                        <div class="warning-box">
+                            <strong>⚠️ Коды:</strong> Включайте запись экрана для возврата. Коды "Только РФ" работают только с рублями.
+                        </div>
+                    `;
+                }
+                if (currentCategory === 'items') {
+                    warningHTML += `
+                        <div class="warning-box">
+                            <strong>⚠️ Предметы:</strong> Включайте запись экрана для возврата. 🌍 Активируются во всех регионах.
+                        </div>
+                    `;
+                }
+                container.innerHTML = warningHTML;
+            }
+
+            // ===== ПРЕДУПРЕЖДЕНИЯ ДЛЯ BRAWL STARS (компактные) =====
+            if (currentGame === 'brawl') {
+                let warningHTML = `
+                    <div class="warning-box" style="border-color: #FF6B00;">
+                        <strong>⚠️ Brawl Stars:</strong> Проверьте почту перед заказом. Возврат только на баланс при ошибке.
+                    </div>
+                    <div class="warning-box info">
+                        <strong>📧 Email:</strong> brawl@mail.com | ⏱️ 3–5 мин | 🔄 24/7 | 💰 Кэшбек
+                    </div>
+                    <div class="warning-box" style="border-color: #00FFC8;">
+                        <strong>📋 Условия:</strong> Подтвердите почту и введите 2FA код. Не заходите в игру до завершения доната.
+                    </div>
+                    <div class="warning-box" style="border-color: #ff6b6b;">
+                        <strong>🔑 Инструкция:</strong> #1 Доставка со входом на аккаунт. #2 Передайте 2FA код после оплаты.
+                    </div>
+                `;
+                if (currentCategory === 'pass') {
+                    warningHTML += `
+                        <div class="warning-box" style="border-color: #FF6B00;">
+                            <strong>🎫 Brawl Pass:</strong> Боевой пропуск со скинами, ящиками и новым браклером. Доступен 1 раз за сезон.
+                        </div>
+                    `;
+                }
+                container.innerHTML = warningHTML;
+            }
+
+            // ===== ПРЕДУПРЕЖДЕНИЯ ДЛЯ STANDOFF 2 =====
+            if (currentGame === 'standoff') {
+                container.innerHTML = `
+                    <div class="warning-box info">
+                        <strong>🆔 USER ID:</strong> 000000000 | ✅ Безопасно | ✅ Моментально | 💰 Кэшбек
+                    </div>
+                `;
+            }
+        }
+
+        function renderCategories() {
+            const container = document.getElementById('categories-container');
+            container.innerHTML = '';
+            
+            categoriesData[currentGame].forEach(cat => {
+                const tab = document.createElement('div');
+                tab.className = `category-tab ${cat.id === currentCategory ? 'active' : ''}`;
+                tab.innerText = cat.name;
+                tab.dataset.id = cat.id;
+                tab.onclick = () => switchCategory(cat.id);
+                container.appendChild(tab);
+            });
+
+            renderWarning();
+        }
+
+        function renderProducts() {
+            const container = document.getElementById('products-container');
+            container.innerHTML = '';
+
+            const items = db[currentGame][currentCategory] || [];
+
+            if (items.length === 0) {
+                container.innerHTML = '<p style="text-align:center;color:var(--text-muted)">Товары не найдены</p>';
+                return;
+            }
+
+            if (selectedProductId === null) {
+                selectedProductId = items[0].id;
+            }
+
+            items.forEach((prod) => {
+                const card = document.createElement('div');
+                card.className = `product-card ${prod.id === selectedProductId ? 'selected' : ''}`;
+                card.onclick = () => selectProduct(prod.id);
+
+                let finalPrice = prod.price;
+                let discountText = '';
+                if (activeDiscount > 0 && promoApplied) {
+                    finalPrice = Math.round(prod.price * (1 - activeDiscount / 100));
+                    discountText = `<span class="price-discount">-${activeDiscount}%</span>`;
+                }
+
+                let oldPriceHTML = prod.oldPrice > 0 ? `<span class="price-old">${prod.oldPrice} ₽</span>` : '';
+
+                card.innerHTML = `
+                    <div class="product-info">
+                        <div class="product-title">${prod.name}</div>
+                        <div class="product-prices">
+                            <span class="price-current">${finalPrice} ₽</span>
+                            ${oldPriceHTML}
+                            ${discountText}
+                        </div>
+                    </div>
+                    <div class="radio-circle"></div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function selectProduct(id) {
+            selectedProductId = id;
+            renderProducts();
+        }
+
+        function processOrder() {
+            // ===== ДЛЯ ROBLOX ПРОВЕРЯЕМ EMAIL =====
+            let emailInput = '';
+            let uidInput = '';
+            
+            if (currentGame === 'roblox') {
+                emailInput = document.getElementById('roblox-email').value.trim();
+                if (!emailInput) {
+                    alert('Пожалуйста, введите Email для покупки Робуксов!');
+                    return;
+                }
+                if (!emailInput.includes('@') || !emailInput.includes('.')) {
+                    alert('Пожалуйста, введите корректный Email!');
+                    return;
+                }
+            } else {
+                uidInput = document.getElementById('uid').value.trim();
+                if (!uidInput) {
+                    alert('Пожалуйста, введите ваш ID / UID игрока перед покупкой!');
+                    return;
+                }
+                localStorage.setItem('gametopup_uid', uidInput);
+                userUID = uidInput;
+            }
+
+            let foundProduct = null;
+            const items = db[currentGame][currentCategory] || [];
+            items.forEach(p => {
+                if (p.id === selectedProductId) foundProduct = p;
+            });
+
+            if (!foundProduct) {
+                alert('Пожалуйста, выберите нужный товар!');
+                return;
+            }
+
+            let finalPrice = foundProduct.price;
+            let promoText = '';
+            if (activeDiscount > 0 && promoApplied) {
+                finalPrice = Math.round(foundProduct.price * (1 - activeDiscount / 100));
+                promoText = `%0A🎫 Промокод: ${activePromoCode} (скидка ${activeDiscount}%)`;
+            }
+
+            const gameNames = { ff: 'Free Fire', pubg: 'PUBG Mobile', roblox: 'Roblox', brawl: 'Brawl Stars', standoff: 'Standoff 2' };
+            const gameName = gameNames[currentGame] || currentGame;
+            
+            let idText = '';
+            let emailText = '';
+            
+            if (currentGame === 'roblox') {
+                emailText = `%0A📧 Email для покупки: ${emailInput}`;
+            } else {
+                idText = `%0A🆔 Мой ID/UID: ${uidInput}`;
+            }
+            
+            let extraWarning = '';
+            if (currentGame === 'roblox') {
+                extraWarning = '%0A%0A⚠️ Внимание! Для доната в Roblox необходимо подтверждение возраста (16+) в игре.';
+                if (currentCategory === 'gamepass') {
+                    extraWarning += '%0A🚨 Доставка с 5-дневной задержкой! Не покупайте более 5000 робусков в месяц.';
+                }
+                if (currentCategory === 'codes' || currentCategory === 'items') {
+                    extraWarning += '%0A📹 Включайте запись экрана от покупки до активации для возврата!';
+                }
+            }
+            if (currentGame === 'brawl') {
+                extraWarning = '%0A%0A📧 Email: brawl@mail.com%0A✅ Подтвердите почту и введите 2FA код%0A⚠️ Не заходите в игру до завершения доната!%0A🔑 Потребуется передать 2FA код для входа в аккаунт';
+            }
+            
+            const messageText = `Привет! Хочу купить товар в магазине GameTopUp.%0A%0A🎮 Игра: ${gameName}${idText}${emailText}%0A📦 Товар: ${foundProduct.name}%0A💰 К оплате: ${finalPrice} ₽${promoText}${extraWarning}`;
+            
+            const tgBotUrl = `https://t.me/GameTopUp11_bot?text=${messageText}`;
+            
+            window.open(tgBotUrl, '_blank');
+        }
+
+        function openSupport() {
+            window.open('https://t.me/GameTopUp11_bot', '_blank');
+        }
+
+        function openProfile() {
+            document.getElementById('profile-modal').style.display = 'block';
+            document.getElementById('profile-uid-display').textContent = 'UID: ' + (userUID || 'не указан');
+            updateBalanceDisplay();
+        }
+
+        function closeProfile() {
+            document.getElementById('profile-modal').style.display = 'none';
+        }
+
+        function rechargeBalance() {
+            window.open('https://t.me/GameTopUp11_bot', '_blank');
+        }
+
+        function showHistory() {
+            alert('📋 История покупок:\n\nПока пусто. Совершите первую покупку!');
+        }
+
+        function openAdmin() {
+            const password = prompt("Введите пароль администратора для изменения цен:");
+            if (password === "7308331141") {
+                buildAdminPanel();
+                document.getElementById('admin-modal').style.display = 'block';
+            } else if (password !== null) {
+                alert("Неверный пароль!");
+            }
+        }
+
+        function closeAdmin() {
+            document.getElementById('admin-modal').style.display = 'none';
+        }
+
+        function buildAdminPanel() {
+            const container = document.getElementById('admin-items-list');
+            container.innerHTML = '';
+
+            for (let gameKey in db) {
+                let gameLabel = gameKey === 'ff' ? 'FREE FIRE' : (gameKey === 'pubg' ? 'PUBG' : (gameKey === 'roblox' ? 'ROBLOX' : (gameKey === 'brawl' ? 'BRAWL STARS' : 'STANDOFF 2')));
+                
+                for (let catKey in db[gameKey]) {
+                    let catLabel = categoriesData[gameKey]?.find(c => c.id === catKey)?.name || catKey;
+                    
+                    db[gameKey][catKey].forEach(prod => {
+                        const itemRow = document.createElement('div');
+                        itemRow.className = 'admin-item-row';
+                        itemRow.innerHTML = `
+                            <div class="admin-item-title">[${gameLabel} -> ${catLabel}] ${prod.name}</div>
+                            <div class="admin-inputs">
+                                <div class="admin-input-group">
+                                    <label>Цена (₽)</label>
+                                    <input type="number" class="admin-field price-input" data-game="${gameKey}" data-cat="${catKey}" data-id="${prod.id}" value="${prod.price}">
+                                </div>
+                                <div class="admin-input-group">
+                                    <label>Старая цена (0 - убрать)</label>
+                                    <input type="number" class="admin-field oldprice-input" data-game="${gameKey}" data-cat="${catKey}" data-id="${prod.id}" value="${prod.oldPrice}">
+                                </div>
+                            </div>
+                        `;
+                        container.appendChild(itemRow);
+                    });
+                }
+            }
+        }
+
+        function saveAdminPrices() {
+            const priceInputs = document.querySelectorAll('.price-input');
+            priceInputs.forEach(input => {
+                const game = input.dataset.game;
+                const cat = input.dataset.cat;
+                const id = input.dataset.id;
+                const newVal = parseInt(input.value) || 0;
+
+                let item = db[game][cat].find(p => p.id === id);
+                if (item) item.price = newVal;
+            });
+
+            const oldPriceInputs = document.querySelectorAll('.oldprice-input');
+            oldPriceInputs.forEach(input => {
+                const game = input.dataset.game;
+                const cat = input.dataset.cat;
+                const id = input.dataset.id;
+                const newVal = parseInt(input.value) || 0;
+
+                let item = db[game][cat].find(p => p.id === id);
+                if (item) item.oldPrice = newVal;
+            });
+
+            localStorage.setItem('gametopup_db', JSON.stringify(db));
+            
+            alert('✅ Все изменения успешно сохранены!');
+            closeAdmin();
+            renderProducts();
+        }
+
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.style.display = 'none';
+            }
+        };
+    </script>
+</body>
+</html>
